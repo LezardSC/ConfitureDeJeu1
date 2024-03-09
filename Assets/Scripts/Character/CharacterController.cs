@@ -25,6 +25,7 @@ public class CharacterController : MonoBehaviour
     private float lastAxisInput;
     private bool jump;
     private bool mask;
+    private bool pause;
 
     private Quaternion leftRotation = new Quaternion(0, 180, 0, 0);
     private Quaternion rightRotation = new Quaternion(0, 0, 0, 0);
@@ -71,6 +72,11 @@ public class CharacterController : MonoBehaviour
     private bool isUsingMask;
     public int afterMaskUseTimer;
 
+    [Space(10)]
+    [Header("Pause Specifics")]
+    private int afterPauseTimer;
+    public GameObject pauseScreen;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -82,6 +88,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         canMove = true;
+        pauseScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -101,8 +108,18 @@ public class CharacterController : MonoBehaviour
         }
         else mask = false;
 
+        if (Input.GetKeyDown("escape"))
+        {
+            pause = true;
+        }
+        else pause = false;
+
+        if (afterPauseTimer > 0 && afterPauseTimer < 20) afterPauseTimer++;
+        else afterPauseTimer = 0;
+
         MoveJump();
         MoveMask();
+        MovePause();
     }
 
     private void FixedUpdate()
@@ -118,7 +135,7 @@ public class CharacterController : MonoBehaviour
             if (!startedJump) afterJumpTimer = 0;
             afterWallJumpTimer = 0;
             canMove = true;
-            canUseDoubleJump = true;
+            usedDoubleJump = false;
         }
         else
         {
@@ -152,7 +169,7 @@ public class CharacterController : MonoBehaviour
             | Physics.Raycast(rigidbody.transform.position, Vector3.left, distToWall + (boxCollider.size.x / 2), groundMask))
         {
             isTouchingWall = true;
-            canUseDoubleJump = true;
+            usedDoubleJump = false;
         }
         else
         {
@@ -201,7 +218,7 @@ public class CharacterController : MonoBehaviour
         else if (jump && !isGrounded && !isTouchingWall && canUseDoubleJump && !usedDoubleJump && (afterJumpTimer == 0 | afterJumpTimer > 10) && afterWallJumpTimer == 0)
         {
             rigidbody.velocity = Vector3.up * doubleJumpVelocity;
-            canUseDoubleJump = false;
+            usedDoubleJump = true;
             startedJump = true;
             afterWallJumpTimer = 1;
         }
@@ -223,6 +240,23 @@ public class CharacterController : MonoBehaviour
             }
             cameraMaskHandler.ChangeLayerMask(!isUsingMask);
             afterMaskUseTimer = 1;
+        }
+    }
+
+    void MovePause()
+    {
+        if (pause && afterPauseTimer == 0)
+        {
+            if (Time.timeScale == 0)
+            {
+                Time.timeScale = 1;
+                pauseScreen.SetActive(false);
+            }
+            else
+            {
+                Time.timeScale = 0;
+                pauseScreen.SetActive(true);
+            }
         }
     }
 
