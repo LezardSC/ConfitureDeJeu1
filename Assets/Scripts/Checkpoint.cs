@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    public GameObject highlighter;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        highlighter.SetActive(false);
     }
 
     // Update is called once per frame
@@ -20,6 +22,7 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.tag == "Player")
         {
+            highlighter.SetActive(true);
             FindObjectOfType<RespawnHandler>().respawnPosition = this.transform.position;
         }
     }

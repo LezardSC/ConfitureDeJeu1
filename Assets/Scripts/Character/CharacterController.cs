@@ -53,6 +53,7 @@ public class CharacterController : MonoBehaviour
     public bool canUseDoubleJump;
     private bool usedDoubleJump;
     public float doubleJumpVelocity;
+    private StretchAnimation stretchAnimation;
 
     [Space(10)]
     [Header("Wall Specifics")]
@@ -82,6 +83,7 @@ public class CharacterController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         boxCollider = GetComponent<BoxCollider>();
+        stretchAnimation = GetComponent<StretchAnimation>();
     }
 
     // Start is called before the first frame update
@@ -199,6 +201,9 @@ public class CharacterController : MonoBehaviour
             rigidbody.velocity = Vector3.up * jumpVelocity;
             startedJump = true;
             afterJumpTimer = 1;
+            stretchAnimation.DoStretch("StretchJumpAnimation");
+            afterJumpTimer = 1;
+            stretchAnimation.DoStretch("StretchJumpAnimation");
         }
         else if (jump && canUseWallJump && isTouchingWall && !isGrounded && (afterJumpTimer == 0 | afterJumpTimer > 10) && (afterWallJumpTimer == 0 | afterWallJumpTimer > 10))
         {
@@ -214,6 +219,7 @@ public class CharacterController : MonoBehaviour
             }
             canMove = false;
             afterWallJumpTimer = 1;
+            stretchAnimation.DoStretch("StretchJumpAnimation");
         }
         else if (jump && !isGrounded && !isTouchingWall && canUseDoubleJump && !usedDoubleJump && (afterJumpTimer == 0 | afterJumpTimer > 10) && afterWallJumpTimer == 0)
         {
@@ -221,6 +227,7 @@ public class CharacterController : MonoBehaviour
             usedDoubleJump = true;
             startedJump = true;
             afterWallJumpTimer = 1;
+            stretchAnimation.DoStretch("StretchJumpAnimation");
         }
     }
 
