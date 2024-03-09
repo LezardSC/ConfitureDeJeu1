@@ -14,6 +14,7 @@ public class CharacterController : MonoBehaviour
     private BoxCollider boxCollider;
     public GameObject characterModel;
     public CameraMaskHandler cameraMaskHandler;
+    private MaskOnlyCollidersHandler maskOnlyCollidersHandler;
 
     [Tooltip("Layers where the player can stand on")]
     [SerializeField] LayerMask groundMask;
@@ -70,6 +71,7 @@ public class CharacterController : MonoBehaviour
     [Header("Mask Specifics")]
     public bool canUseMask;
     public Animator maskFilterAnim;
+    public Animator maskBackgroundAnim;
     private bool isUsingMask;
     public int afterMaskUseTimer;
 
@@ -84,6 +86,7 @@ public class CharacterController : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         boxCollider = GetComponent<BoxCollider>();
         stretchAnimation = GetComponent<StretchAnimation>();
+        maskOnlyCollidersHandler = GetComponent<MaskOnlyCollidersHandler>();
     }
 
     // Start is called before the first frame update
@@ -238,14 +241,17 @@ public class CharacterController : MonoBehaviour
             if (isUsingMask)
             {
                 maskFilterAnim.CrossFade("MaskFilter_Remove", 0);
+                maskBackgroundAnim.CrossFade("MaskBackground_Remove", 0);
                 isUsingMask = false;
             }
             else
             {
                 maskFilterAnim.CrossFade("MaskFilter_PutOn", 0);
+                maskBackgroundAnim.CrossFade("MaskBackground_PutOn", 0);
                 isUsingMask = true;
             }
             cameraMaskHandler.ChangeLayerMask(!isUsingMask);
+            maskOnlyCollidersHandler.ShowMaskOnlyColliders(isUsingMask);
             afterMaskUseTimer = 1;
         }
     }
