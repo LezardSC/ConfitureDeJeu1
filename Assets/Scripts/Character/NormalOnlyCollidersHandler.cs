@@ -11,7 +11,7 @@ public class NormalOnlyCollidersHandler : MonoBehaviour
         normalOnlyColliders = GameObject.FindGameObjectsWithTag("NormalOnlyCollider");
         foreach (GameObject normalOnlyCollider in normalOnlyColliders)
         {
-            normalOnlyCollider.SetActive(false);
+            normalOnlyCollider.SetActive(true);
         }
     }
 
