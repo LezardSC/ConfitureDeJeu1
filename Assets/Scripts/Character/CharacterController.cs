@@ -30,7 +30,7 @@ public class CharacterController : MonoBehaviour
     private bool mask;
     private bool pause;
 
-    private Quaternion leftRotation = new Quaternion(0, 180, 0, 0);
+    private Quaternion leftRotation = new Quaternion(0, -180, 0, 0);
     private Quaternion rightRotation = new Quaternion(0, 0, 0, 0);
 
     [Space(10)]
