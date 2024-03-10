@@ -16,6 +16,7 @@ public class CharacterController : MonoBehaviour
     public GameObject maskModel;
     public CameraMaskHandler cameraMaskHandler;
     private MaskOnlyCollidersHandler maskOnlyCollidersHandler;
+    private NormalOnlyCollidersHandler normalOnlyCollidersHandler;
 
     [Tooltip("Layers where the player can stand on")]
     [SerializeField] LayerMask groundMask;
@@ -93,6 +94,7 @@ public class CharacterController : MonoBehaviour
         collider = GetComponent<BoxCollider>();
         stretchAnimation = GetComponent<StretchAnimation>();
         maskOnlyCollidersHandler = GetComponent<MaskOnlyCollidersHandler>();
+        normalOnlyCollidersHandler = GetComponent<NormalOnlyCollidersHandler>();
     }
 
     // Start is called before the first frame update
@@ -284,6 +286,7 @@ public class CharacterController : MonoBehaviour
             }
             cameraMaskHandler.ChangeLayerMask(!isUsingMask);
             maskOnlyCollidersHandler.ShowMaskOnlyColliders(isUsingMask);
+            normalOnlyCollidersHandler.ShowMaskOnlyColliders(!isUsingMask);
             maskModel.SetActive(isUsingMask);
             afterMaskUseTimer = 1;
         }
