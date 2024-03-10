@@ -1581,7 +1581,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5119020197003271987}
   - component: {fileID: 5119020197003271988}
-  - component: {fileID: 5119020197003271991}
+  - component: {fileID: 2474395296344375504}
+  - component: {fileID: 3801848703313899138}
   - component: {fileID: 5119020197003271985}
   - component: {fileID: 5119020197003271982}
   - component: {fileID: 5119020197003271984}
@@ -1625,9 +1626,9 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 120
-  m_CollisionDetection: 1
---- !u!65 &5119020197003271991
-BoxCollider:
+  m_CollisionDetection: 3
+--- !u!136 &2474395296344375504
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1636,6 +1637,20 @@ BoxCollider:
   m_Material: {fileID: 13400000, guid: 90f13eccf78316647a75bf1fdef20ae3, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &3801848703313899138
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5119020197003271993}
+  m_Material: {fileID: 13400000, guid: 90f13eccf78316647a75bf1fdef20ae3, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1711,7 +1726,7 @@ MonoBehaviour:
   walkParticleEffect: {fileID: 2386824927889687520, guid: a138063d55e1c644cbfc9638ff844c8f,
     type: 3}
   groundDetecter: {fileID: 5119020196487322341}
-  distToGround: 0.01
+  distToGround: 0.1
   jumpVelocity: 20
   afterJumpTimer: 0
   afterJumpTimerLimit: 70
