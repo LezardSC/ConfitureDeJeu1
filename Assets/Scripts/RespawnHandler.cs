@@ -6,6 +6,7 @@ public class RespawnHandler : MonoBehaviour
 {
     private GameObject characterObject;
     public Vector3 respawnPosition;
+    public Animator transitionScreenAnim;
 
     // Start is called before the first frame update
     void Start()
@@ -28,8 +29,11 @@ public class RespawnHandler : MonoBehaviour
     IEnumerator RespawnCharacterCoroutine()
     {
         characterObject.SetActive(false);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
+        transitionScreenAnim.CrossFade("Transition_Start", 0);
+        yield return new WaitForSeconds(1);
         characterObject.transform.position = respawnPosition;
+        transitionScreenAnim.CrossFade("Transition_End", 0);
         characterObject.SetActive(true);
     }
 }
