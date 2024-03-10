@@ -15,12 +15,12 @@ public class StretchAnimation : MonoBehaviour
     {
         void DoPositiveStuff()
         {
-            characterModel.transform.localScale += new Vector3(-0.01f, 0.05f, -0.01f);
+            characterModel.transform.localScale += new Vector3(-0.02f, 0.1f, -0.02f);
         }
 
         void DoNegativeStuff()
         {
-            characterModel.transform.localScale -= new Vector3(-0.01f, 0.05f, -0.01f);
+            characterModel.transform.localScale -= new Vector3(-0.02f, 0.1f, -0.02f);
         }
 
         for (int i = 0; i < 8; i++)

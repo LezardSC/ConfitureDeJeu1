@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MusicPlayer
   - MaskOnlyCollider
+  - NormalOnlyCollider
   layers:
   - Default
   - TransparentFX

@@ -11,11 +11,12 @@ public class CharacterController : MonoBehaviour
 {
     public InputReader inputReader;
     private Rigidbody rigidbody;
-    private BoxCollider boxCollider;
+    private BoxCollider collider;
     public GameObject characterModel;
     public GameObject maskModel;
     public CameraMaskHandler cameraMaskHandler;
     private MaskOnlyCollidersHandler maskOnlyCollidersHandler;
+    private NormalOnlyCollidersHandler normalOnlyCollidersHandler;
 
     [Tooltip("Layers where the player can stand on")]
     [SerializeField] LayerMask groundMask;
@@ -90,9 +91,10 @@ public class CharacterController : MonoBehaviour
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        boxCollider = GetComponent<BoxCollider>();
+        collider = GetComponent<BoxCollider>();
         stretchAnimation = GetComponent<StretchAnimation>();
         maskOnlyCollidersHandler = GetComponent<MaskOnlyCollidersHandler>();
+        normalOnlyCollidersHandler = GetComponent<NormalOnlyCollidersHandler>();
     }
 
     // Start is called before the first frame update
@@ -186,13 +188,22 @@ public class CharacterController : MonoBehaviour
 
     private void CheckGrounded()
     {
-        isGrounded = Physics.Raycast(rigidbody.transform.position, -Vector3.up, distToGround + (boxCollider.size.y / 2), groundMask);
+        if (Physics.Raycast(rigidbody.transform.position + new Vector3(0.001f, 0 , 0), -Vector3.up, distToGround + (collider.size.y / 2), groundMask)
+            | Physics.Raycast(rigidbody.transform.position + new Vector3(-0.001f, 0, 0), -Vector3.up, distToGround + (collider.size.y / 2), groundMask))
+        {
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+        //(Physics.Raycast(rigidbody.transform.position, -Vector3.up, distToGround + (collider.size.y / 2), groundMask));
     }
-    
+
     private void CheckWall()
     {
-        if (Physics.Raycast(rigidbody.transform.position, Vector3.right, distToWall + (boxCollider.size.x / 2), groundMask)
-            | Physics.Raycast(rigidbody.transform.position, Vector3.left, distToWall + (boxCollider.size.x / 2), groundMask))
+        if (Physics.Raycast(rigidbody.transform.position, Vector3.right, distToWall + (collider.size.x / 2), groundMask)
+            | Physics.Raycast(rigidbody.transform.position, Vector3.left, distToWall + (collider.size.x / 2), groundMask))
         {
             isTouchingWall = true;
             usedDoubleJump = false;
@@ -201,10 +212,6 @@ public class CharacterController : MonoBehaviour
         {
             isTouchingWall = false;
         }
-        /*
-        isTouchingWall = (Physics.Raycast(rigidbody.transform.position, new Vector3(0, 0, characterModel.transform.position.z), distToWall + (boxCollider.size.x / 2), groundMask) );
-        Debug.DrawLine(rigidbody.transform.position, new Vector3(rigidbody.transform.position.x, rigidbody.transform.position.y, rigidbody.transform.position.z + 10), Color.red);
-        Debug.DrawRay(rigidbody.transform.position, characterModel.transform.position + new Vector3(0, 10, 0));*/
     }
 
     void RotateCharacterModel()
@@ -230,18 +237,17 @@ public class CharacterController : MonoBehaviour
             afterJumpTimer = 1;
             stretchAnimation.DoStretch("StretchJumpAnimation");
             afterJumpTimer = 1;
-            stretchAnimation.DoStretch("StretchJumpAnimation");
             Instantiate<ParticleSystem>(jumpParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
         }
         else if (jump && canUseWallJump && isTouchingWall && !isGrounded && (afterJumpTimer == 0 | afterJumpTimer > 10) && (afterWallJumpTimer == 0 | afterWallJumpTimer > 10))
         {
             rigidbody.velocity = Vector3.up * wallJumpVerticalVelocity;
             startedJump = true;
-            if (Physics.Raycast(rigidbody.transform.position, Vector3.right, boxCollider.size.x / 2 + 0.1f, groundMask))
+            if (Physics.Raycast(rigidbody.transform.position, Vector3.right, collider.size.x / 2 + 0.1f, groundMask))
             {
                 rigidbody.AddForce(Vector3.left * wallJumpHorizontalVelocity, ForceMode.Impulse);
             }
-            else if (Physics.Raycast(rigidbody.transform.position, Vector3.left, boxCollider.size.x / 2 + 0.1f, groundMask))
+            else if (Physics.Raycast(rigidbody.transform.position, Vector3.left, collider.size.x / 2 + 0.1f, groundMask))
             {
                 rigidbody.AddForce(Vector3.right * wallJumpHorizontalVelocity, ForceMode.Impulse);
             }
@@ -256,8 +262,9 @@ public class CharacterController : MonoBehaviour
             usedDoubleJump = true;
             startedJump = true;
             afterWallJumpTimer = 1;
-            stretchAnimation.DoStretch("StretchDoubleJumpAnimation");
+            stretchAnimation.DoStretch("StretchJumpAnimation");
             Instantiate<ParticleSystem>(jumpParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
+            afterJumpTimer = 0;
         }
     }
 
@@ -279,6 +286,7 @@ public class CharacterController : MonoBehaviour
             }
             cameraMaskHandler.ChangeLayerMask(!isUsingMask);
             maskOnlyCollidersHandler.ShowMaskOnlyColliders(isUsingMask);
+            normalOnlyCollidersHandler.ShowMaskOnlyColliders(!isUsingMask);
             maskModel.SetActive(isUsingMask);
             afterMaskUseTimer = 1;
         }
