@@ -13,6 +13,7 @@ public class CharacterController : MonoBehaviour
     private Rigidbody rigidbody;
     private BoxCollider boxCollider;
     public GameObject characterModel;
+    public GameObject maskModel;
     public CameraMaskHandler cameraMaskHandler;
     private MaskOnlyCollidersHandler maskOnlyCollidersHandler;
 
@@ -36,6 +37,8 @@ public class CharacterController : MonoBehaviour
     public float movementSpeed;
     public float dampSpeedUp;
     private bool canMove;
+    public ParticleSystem walkParticleEffect;
+    private int walkParticleTimer;
 
     [Space(10)]
     [Header("Jump Specifics")]
@@ -48,6 +51,7 @@ public class CharacterController : MonoBehaviour
     public float afterJumpTimer;
     public float afterJumpTimerLimit;
     private bool startedJump;
+    public ParticleSystem jumpParticleEffect;
 
     [Space(10)]
     [Header("Jump Specifics")]
@@ -66,6 +70,8 @@ public class CharacterController : MonoBehaviour
     public float wallJumpHorizontalVelocity;
     private float afterWallJumpTimer;
     public float afterWallJumpTimerLimit;
+    public ParticleSystem wallParticleEffectLeft;
+    public ParticleSystem wallParticleEffectRight;
 
     [Space(10)]
     [Header("Mask Specifics")]
@@ -73,7 +79,7 @@ public class CharacterController : MonoBehaviour
     public Animator maskFilterAnim;
     public Animator maskBackgroundAnim;
     private bool isUsingMask;
-    public int afterMaskUseTimer;
+    private int afterMaskUseTimer;
 
     [Space(10)]
     [Header("Pause Specifics")]
@@ -94,6 +100,7 @@ public class CharacterController : MonoBehaviour
     {
         canMove = true;
         pauseScreen.SetActive(false);
+        maskModel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -141,6 +148,15 @@ public class CharacterController : MonoBehaviour
             afterWallJumpTimer = 0;
             canMove = true;
             usedDoubleJump = false;
+            if (axisInput != 0)
+            {
+                if (walkParticleTimer < 3) walkParticleTimer++;
+                else
+                {
+                    walkParticleTimer = 0;
+                    Instantiate<ParticleSystem>(walkParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
+                }
+            }
         }
         else
         {
@@ -154,6 +170,11 @@ public class CharacterController : MonoBehaviour
             {
                 afterWallJumpTimer = 0;
                 canMove = true;
+            }
+            if (isTouchingWall && (afterJumpTimer == 0 | afterJumpTimer > 10))
+            {
+                if (characterModel.transform.rotation == leftRotation) Instantiate<ParticleSystem>(wallParticleEffectLeft, characterModel.transform.position, characterModel.transform.rotation);
+                else Instantiate<ParticleSystem>(wallParticleEffectRight, characterModel.transform.position, characterModel.transform.rotation);
             }
         }
 
@@ -194,7 +215,10 @@ public class CharacterController : MonoBehaviour
 
     void MoveWalk()
     {
-        if (canMove) rigidbody.velocity = new Vector3(axisInput * movementSpeed, rigidbody.velocity.y, 0f);
+        if (canMove)
+        {
+            rigidbody.velocity = new Vector3(axisInput * movementSpeed, rigidbody.velocity.y, 0f);
+        }
     }
 
     void MoveJump()
@@ -207,6 +231,7 @@ public class CharacterController : MonoBehaviour
             stretchAnimation.DoStretch("StretchJumpAnimation");
             afterJumpTimer = 1;
             stretchAnimation.DoStretch("StretchJumpAnimation");
+            Instantiate<ParticleSystem>(jumpParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
         }
         else if (jump && canUseWallJump && isTouchingWall && !isGrounded && (afterJumpTimer == 0 | afterJumpTimer > 10) && (afterWallJumpTimer == 0 | afterWallJumpTimer > 10))
         {
@@ -223,6 +248,7 @@ public class CharacterController : MonoBehaviour
             canMove = false;
             afterWallJumpTimer = 1;
             stretchAnimation.DoStretch("StretchJumpAnimation");
+            Instantiate<ParticleSystem>(jumpParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
         }
         else if (jump && !isGrounded && !isTouchingWall && canUseDoubleJump && !usedDoubleJump && (afterJumpTimer == 0 | afterJumpTimer > 10) && afterWallJumpTimer == 0)
         {
@@ -230,7 +256,8 @@ public class CharacterController : MonoBehaviour
             usedDoubleJump = true;
             startedJump = true;
             afterWallJumpTimer = 1;
-            stretchAnimation.DoStretch("StretchJumpAnimation");
+            stretchAnimation.DoStretch("StretchDoubleJumpAnimation");
+            Instantiate<ParticleSystem>(jumpParticleEffect, characterModel.transform.position, characterModel.transform.rotation);
         }
     }
 
@@ -252,6 +279,7 @@ public class CharacterController : MonoBehaviour
             }
             cameraMaskHandler.ChangeLayerMask(!isUsingMask);
             maskOnlyCollidersHandler.ShowMaskOnlyColliders(isUsingMask);
+            maskModel.SetActive(isUsingMask);
             afterMaskUseTimer = 1;
         }
     }
